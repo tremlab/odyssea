@@ -1,0 +1,22 @@
+databases:
+  - name: odjobdb
+    plan: free
+    databaseName: renee
+    user: renee
+
+services:
+  - type: web
+    plan: free
+    name: od_job
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "python -m gunicorn od_job.asgi:application -k uvicorn.workers.UvicornWorker"    
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: odjobdb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
